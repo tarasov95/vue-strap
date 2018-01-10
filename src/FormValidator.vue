@@ -18,6 +18,9 @@ export default {
     }
   },
   watch: {
+    children () {
+      this.validate()
+    },
     valid (val, old) {
       this.$emit('isvalid', val)
       this.$emit('input', val)
