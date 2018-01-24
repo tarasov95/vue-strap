@@ -19,7 +19,8 @@ export default {
   },
   watch: {
     children () {
-      this.validate()
+      this.validate();
+      this.$emit('children', this.children);
     },
     valid (val, old) {
       this.$emit('isvalid', val)
@@ -39,6 +40,11 @@ export default {
       })
       this.valid = !invalid
       return !invalid
+    },
+    evalValid () {
+      this.children.forEach(el=>{
+        el.evalValid&&el.evalValid();
+      });
     }
   },
   created () {

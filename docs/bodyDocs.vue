@@ -15,33 +15,22 @@
       <div class="container bs-docs-container">
         <div class="row">
           <div class="col-md-9">
-            <getting-started></getting-started>
-            <accordion-docs></accordion-docs>
-            <affix-docs></affix-docs>
             <alert-docs></alert-docs>
-            <aside-docs></aside-docs>
-            <button-group-docs></button-group-docs>
-            <carousel-docs></carousel-docs>
-            <checkbox-docs></checkbox-docs>
             <datepicker-docs></datepicker-docs>
             <dropdown-docs></dropdown-docs>
             <form-validator-docs></form-validator-docs>
             <input-docs></input-docs>
             <modal-docs></modal-docs>
-            <navbar-docs></navbar-docs>
             <popover-docs></popover-docs>
             <progressbar-docs></progressbar-docs>
-            <radio-docs></radio-docs>
             <select-docs></select-docs>
             <spinner-docs></spinner-docs>
             <tabs-docs></tabs-docs>
-            <toggle-button-docs></toggle-button-docs>
             <tooltip-docs></tooltip-docs>
             <typeahead-docs></typeahead-docs>
             <!--<form-group-docs></form-group-docs>-->
           </div>
           <div class="col-md-3">
-            <affix-sidebar></affix-sidebar>
           </div>
         </div>
       </div>
@@ -65,57 +54,57 @@
 </template>
 
 <script>
-import accordionDocs from './example/accordionDocs.vue'
-import affixDocs from './example/affixDocs.vue'
-import affixSidebar from './affixSidebar.vue'
+//import accordionDocs from './example/accordionDocs.vue'
+//import affixDocs from './example/affixDocs.vue'
+//import affixSidebar from './affixSidebar.vue'
 import alertDocs from './example/alertDocs.vue'
-import asideDocs from './example/asideDocs.vue'
-import buttonGroupDocs  from './example/buttonGroupDocs.vue'
-import carouselDocs from './example/carouselDocs.vue'
-import checkboxDocs from './example/checkboxDocs.vue'
+//import asideDocs from './example/asideDocs.vue'
+//import buttonGroupDocs  from './example/buttonGroupDocs.vue'
+//import carouselDocs from './example/carouselDocs.vue'
+//import checkboxDocs from './example/checkboxDocs.vue'
 import datepickerDocs from './example/datepickerDocs.vue'
 import dropdownDocs from './example/dropdownDocs.vue'
-import formGroupDocs from './example/formGroupDocs.vue'
+//import formGroupDocs from './example/formGroupDocs.vue'
 import formValidatorDocs from './example/formValidatorDocs.vue'
-import gettingStarted from './example/gettingStarted.vue'
+//import gettingStarted from './example/gettingStarted.vue'
 import inputDocs from './example/inputDocs.vue'
 import modalDocs from './example/modalDocs.vue'
-import navbarDocs from './example/navbarDocs.vue'
+//import navbarDocs from './example/navbarDocs.vue'
 import popoverDocs from './example/popoverDocs.vue'
 import progressbarDocs from './example/progressbarDocs.vue'
-import radioDocs from './example/radioDocs.vue'
+//import radioDocs from './example/radioDocs.vue'
 import selectDocs from './example/selectDocs.vue'
 import spinnerDocs from './example/spinnerDocs.vue'
 import tabsDocs from './example/tabsDocs.vue'
-import toggleButtonDocs from './example/toggleButtonDocs.vue'
+//import toggleButtonDocs from './example/toggleButtonDocs.vue'
 import tooltipDocs from './example/tooltipDocs.vue'
 import typeaheadDocs from './example/typeaheadDocs.vue'
 
 export default {
   components: {
-    accordionDocs,
-    affixDocs,
-    affixSidebar,
+    //accordionDocs,
+    //affixDocs,
+    //affixSidebar,
     alertDocs,
-    asideDocs,
-    buttonGroupDocs,
-    carouselDocs,
-    checkboxDocs,
+    //asideDocs,
+    //buttonGroupDocs,
+    //carouselDocs,
+    //checkboxDocs,
     datepickerDocs,
     dropdownDocs,
-    formGroupDocs,
+    //formGroupDocs,
     formValidatorDocs,
-    gettingStarted,
+    //gettingStarted,
     inputDocs,
     modalDocs,
-    navbarDocs,
+    //navbarDocs,
     popoverDocs,
     progressbarDocs,
-    radioDocs,
+    //radioDocs,
     selectDocs,
     spinnerDocs,
     tabsDocs,
-    toggleButtonDocs,
+    //toggleButtonDocs,
     tooltipDocs,
     typeaheadDocs
   },

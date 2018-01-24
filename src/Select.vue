@@ -1,5 +1,5 @@
 <template>
-  <div ref="select" :class="classes" v-click-outside="close">
+  <div ref="select" :class="classes" v-click-outside="close" style="position:relative">
     <div ref="btn" class="form-control dropdown-toggle" tabindex="1" :disabled="disabled || !hasParent" :readonly="readonly"
       @blur="canSearch ? null : close()"
       @click="toggle()"
@@ -69,6 +69,7 @@ export default {
     countText: {type: String, default: null},
     showCount: {type: Boolean, default: false},
     url: {type: String, default: null},
+    vsClass: {tyep:String, default:"vsSelect"},
     value: null
   },
   data () {
@@ -84,7 +85,7 @@ export default {
   },
   computed: {
     canSearch () { return this.minSearch ? this.list.length >= this.minSearch : this.search },
-    classes () { return [{open: this.show, disabled: this.disabled}, this.class, this.isLi ? 'dropdown' : this.inInput ? 'input-group-btn' : 'btn-group'] },
+    classes () { return [{open: this.show, disabled: this.disabled}, this.class, this.isLi ? 'dropdown' : this.inInput ? 'input-group-btn' : this.vsClass] },
     filteredOptions () {
       var search = (this.searchValue || '').toLowerCase()
       return !search ? this.list : this.list.filter(el => {
@@ -261,6 +262,9 @@ export default {
 </script>
 
 <style scoped>
+.vsSelect {
+  display:inline-block;
+}
 .form-control.dropdown-toggle{
   height: auto;
   padding-right: 24px;

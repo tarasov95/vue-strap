@@ -1,5 +1,5 @@
 <template>
-  <div class="form-group" :class="{validate:canValidate,'has-feedback':icon,'has-error':canValidate&&valid===false,'has-success':canValidate&&valid}">
+  <div :class="[vsClass, {validate:canValidate,'has-feedback':icon,'has-error':canValidate&&valid===false,'has-success':canValidate&&valid}]">
     <slot name="label"><label v-if="label" class="control-label" @click="focus">{{label}}</label></slot>
     <div v-if="$slots.before||$slots.after" class="input-group">
       <slot name="before"></slot>
@@ -31,7 +31,7 @@
       <slot name="after"></slot>
     </div>
     <template v-else>
-      <textarea :is="type=='textarea'?type:'input'" class="form-control" ref="input"
+      <textarea v-if="type=='textarea'" class="form-control" ref="input"
         :cols="cols"
         :disabled="disabled"
         :list="id_datalist"
@@ -50,6 +50,25 @@
         @blur="emit" @focus="emit" @input="emit"
         @keyup.enter="type!='textarea'&&enterSubmit&&submit()"
       ></textarea>
+      <input v-if="type!='textarea'" class="form-control" ref="input"
+        :cols="cols"
+        :disabled="disabled"
+        :list="id_datalist"
+        :max="attr(max)"
+        :maxlength="maxlength"
+        :min="attr(min)"
+        :name="name"
+        :placeholder="placeholder"
+        :readonly="readonly"
+        :required="required"
+        :rows="rows"
+        :step="step"
+        :title="attr(title)"
+        :type="type=='textarea'?null:type"
+        v-model="val"
+        @blur="emit" @focus="emit" @input="emit"
+        @keyup.enter="type!='textarea'&&enterSubmit&&submit()"
+      />
       <span v-if="clearButton && val" class="close" @click="val = ''">&times;</span>
       <span v-if="icon&&valid!==null" :class="['form-control-feedback glyphicon','glyphicon-'+(valid?'ok':'remove')]" aria-hidden="true"></span>
     </template>
@@ -98,7 +117,8 @@ export default {
     url: {type: String, default: null},
     urlMap: {type: Function, default: null},
     validationDelay: {type: Number, default: 250},
-    value: {default: null}
+    value: {default: null},
+    vsClass: {type:String, default:"vsInput"}
   },
   data () {
     var val = this.value
@@ -196,7 +216,7 @@ export default {
         return this.$parent.validate()
       }
       if (this.input.form) {
-        const invalids = $('.form-group.validate:not(.has-success)', this.input.form)
+        const invalids = $('.validate:not(.has-success)', this.input.form)
         if (invalids.length) {
           invalids.find('input,textarea,select')[0].focus()
         } else {
@@ -206,7 +226,7 @@ export default {
     },
     validate () {
       if (!this.canValidate) { return true }
-      let value = (this.val || '').trim()
+      let value = String(this.val || '').trim()
       if (!value) { return !this.required }
       if (this.match !== null) { return this.match === value }
       if (value.length < this.minlength) { return false }
@@ -215,6 +235,13 @@ export default {
         if (!(this.regex instanceof Function ? this.regex(this.val) : this.regex.test(this.val))) { return false }
       }
       return true
+    },
+    evalValid() {
+      if(this.canValidate) {
+        if (!this.validate()) {
+          this.valid = false;
+        }
+      }
     },
     reset() {
       this.value = ''
@@ -264,6 +291,12 @@ export default {
 </script>
 
 <style scoped>
+.vsInput {
+  display:inline-block;
+}
+.vsInput input.form-control {
+  display:inline-block;
+}
 .form-group {
   position: relative;
 }
