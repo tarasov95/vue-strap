@@ -24,7 +24,7 @@ import modal from './Modal.vue'
 import popover from './Popover.vue'
 import progressbar from './Progressbar.vue'
 //import radio from './Radio.vue'
-import select from './Select.vue'
+//import select from './Select.vue'
 //import slider from './Slider.vue'
 import spinner from './Spinner.vue'
 import tab from './Tab.vue'
@@ -63,7 +63,7 @@ const VueStrap = {
   //popover,
   progressbar,
   //radio,
-  select,
+  //select,
   //slider,
   spinner,
   tab,

@@ -1,10 +1,11 @@
 <template>
   <div style="position: relative" :class="{open:showDropdown}">
     <input class="form-control" autocomplete="off"
-      v-model="val"
+      :value="val" @input="changed($event)"
       :placeholder="placeholder"
       :type.once="type"
-      @blur="showDropdown = false"
+      @blur="blur"
+      @focus="focus"
       @keydown.down.prevent="down"
       @keydown.enter="hit"
       @keydown.esc="reset"
@@ -21,21 +22,26 @@
 </template>
 
 <script>
-import {delayer, getJSON} from './utils/utils.js'
+import {delayer} from './utils/utils.js'
 var DELAY = 300
 
 export default {
   props: {
-    async: {type: String},
+    async: {type: Function, default:null},
     data: {type: Array},
     delay: {type: Number, default: DELAY},
     asyncKey: {type: String, default: null},
-    limit: {type: Number, default: 8},
+    limit: {type: Number, default: 64},
     matchCase: {type: Boolean, default: false},
     matchStart: {type: Boolean, default: false},
+    openMinLength: {type:Number, default:0},
     onHit: {
       type: Function,
       default (item) { return item }
+    },
+    asyncFilter: {
+      type: Function,
+      default (item) { return true }
     },
     placeholder: {type: String},
     template: {type: String},
@@ -44,9 +50,9 @@ export default {
   },
   data () {
     return {
-      asign: '',
       showDropdown: false,
-      noResults: true,
+      fInteracted:false,
+      fChanged:false,
       current: 0,
       items: [],
       val: this.value
@@ -61,19 +67,38 @@ export default {
     }
   },
   watch: {
-    val (val, old) {
-      this.$emit('input', val)
-      if (val !== old && val !== this.asign) this.__update()
-    },
     value (val) {
       if (this.val !== val) { this.val = val }
     }
   },
   methods: {
+    check4Updates (val) {
+       if (this.openMinLength<=String(val||"").length) {
+        this.__update();
+      }
+    },
+    changed (ev) {
+      this.fChanged = true;
+      var val = ev.target.value;
+      this.$emit('input', val);
+      this.check4Updates(val);
+    },
+    focus (ev) {
+      this.fInteracted = true;
+      if (!this.value) {
+        this.check4Updates(this.val);
+      }
+      this.$emit('focus', this);
+    },
+    blur (ev) {
+      this.showDropdown = false;
+      if (this.fInteracted&&this.fChanged) {
+        this.$emit('blur', this);
+      }
+    },
     setItems (data) {
       if (this.async) {
-        this.items = this.asyncKey ? data[this.asyncKey] : data
-        this.items = this.items.slice(0, this.limit)
+        this.items = (this.asyncKey ? data[this.asyncKey] : data).filter(this.asyncFilter).slice(0, this.limit);
       } else {
         this.items = (data || []).filter(value => {
           if (typeof value === 'object') { return true }
@@ -82,12 +107,11 @@ export default {
           return this.matchStart ? value.indexOf(query) === 0 : value.indexOf(query) !== -1
         }).slice(0, this.limit)
       }
-      this.showDropdown = this.items.length > 0
+      this.showDropdown = true;//this.items.length > 0
     },
     setValue (value) {
-      this.asign = value
       this.val = value
-      this.items = []
+      //this.items = []
       this.loading = false
       this.showDropdown = false
     },
@@ -108,21 +132,17 @@ export default {
     }
   },
   created () {
+    
     this.__update = delayer(function () {
-      if (!this.val) {
-        this.reset()
-        return
-      }
-      this.asign = ''
       if (this.async) {
-        getJSON(this.async + this.val).then(data => {
+        this.async(this.val||"").then(data => {
           this.setItems(data)
-        })
+        });
       } else if (this.data) {
         this.setItems(this.data)
       }
-    }, 'delay', DELAY)
-    this.__update()
+    }, 'delay', DELAY);
+    
   }
 }
 </script>

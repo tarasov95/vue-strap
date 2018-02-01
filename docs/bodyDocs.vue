@@ -73,7 +73,7 @@ import modalDocs from './example/modalDocs.vue'
 import popoverDocs from './example/popoverDocs.vue'
 import progressbarDocs from './example/progressbarDocs.vue'
 //import radioDocs from './example/radioDocs.vue'
-import selectDocs from './example/selectDocs.vue'
+//import selectDocs from './example/selectDocs.vue'
 import spinnerDocs from './example/spinnerDocs.vue'
 import tabsDocs from './example/tabsDocs.vue'
 //import toggleButtonDocs from './example/toggleButtonDocs.vue'
@@ -101,7 +101,7 @@ export default {
     popoverDocs,
     progressbarDocs,
     //radioDocs,
-    selectDocs,
+    //selectDocs,
     spinnerDocs,
     tabsDocs,
     //toggleButtonDocs,

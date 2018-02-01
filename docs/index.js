@@ -34,3 +34,7 @@ new Vue({
     Prism.highlightAll();
   }
 })
+
+import VueStrap from '../src/index.js';
+window.VueStrap = VueStrap;
+//console.log(bodyDocs)
