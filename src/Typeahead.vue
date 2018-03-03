@@ -4,6 +4,7 @@
       :value="val" @input="changed($event)"
       :placeholder="placeholder"
       :type.once="type"
+      :disabled="disabled"
       @blur="blur"
       @focus="focus"
       @keydown.down.prevent="down"
@@ -28,6 +29,7 @@ var DELAY = 300
 export default {
   props: {
     async: {type: Function, default:null},
+    disabled: {type:Boolean, default:false},
     data: {type: Array},
     delay: {type: Number, default: DELAY},
     asyncKey: {type: String, default: null},
