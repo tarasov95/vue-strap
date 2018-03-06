@@ -1,5 +1,5 @@
 <template>
-  <div :class="[vsClass, {validate:canValidate,'has-feedback':icon,'has-error':canValidate&&valid===false,'has-success':canValidate&&valid}]">
+  <div :class="[vsClass, {validate:canValidate,'has-feedback':icon,'has-error':canValidate&&valid===false,'has-success':canValidate&&valid&&fInteracted}]">
     <slot name="label"><label v-if="label" class="control-label" @click="focus">{{label}}</label></slot>
     <div v-if="$slots.before||$slots.after" class="input-group">
       <slot name="before"></slot>
@@ -126,7 +126,8 @@ export default {
       options: this.datalist,
       val,
       valid: null,
-      timeout: null
+      timeout: null,
+      fInteracted: false
     }
   },
   computed: {
@@ -198,6 +199,9 @@ export default {
     emit (e) {
       this.$emit(e.type, e.type == 'input' ? e.target.value : e)
       if (e.type === 'blur' && this.canValidate) { this.valid = this.validate() }
+      if(e.type=='input') {
+        this.fInteracted = true;
+      }
     },
     eval () {
       if (this._timeout.eval) clearTimeout(this._timeout.eval)
