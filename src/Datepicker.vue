@@ -1,16 +1,24 @@
 <template>
-  <div class="datepicker">
-    <input class="form-control datepicker-input" type="text"
+  <div class="datepicker" :class='{validate:canValidate, "has-error":canValidate&&valid===false,"has-success":fInteracted&&canValidate&&valid}'>
+    <input class="form-control datepicker-input" type="text" style="display:inline-block"
       v-model="val"
       :class="{'with-reset-button': clearButton}"
       :name="name"
       :placeholder="placeholder"
       :style="{width:width}"
       @click="inputClick"
+      :required="required"
     />
     <button v-if="clearButton&&val" type="button" class="close" @click="val = ''">
       <span>&times;</span>
     </button>
+    <select class="form-control" v-model="hval" style="width:auto;display:inline-block" :required="required" @change="fInteracted=true">
+      <option v-for="h in 24" :value="h-1">{{pad2(h-1)}}</option>
+    </select>
+    <span>:</span>
+    <select class="form-control" v-model="mval" style="width:auto;display:inline-block" :required="required" @change="fInteracted=true">
+      <option v-for="m in 12" :value="5*(m-1)">{{pad2(5*(m-1))}}</option>
+    </select>
     <div class="datepicker-popup" v-show="displayDayView">
       <div class="datepicker-inner">
         <div class="datepicker-body">
@@ -77,26 +85,32 @@ import {translations} from './utils/utils.js'
 
 export default {
   props: {
-    value: {type: String},
-    format: {default: 'MM/dd/yyyy'},
+    value: {type: Number},
+    format: {default: 'dd MMMM yyyy'},
     disabledDaysOfWeek: {type: Array, default () { return [] }},
-    width: {type: String},
+    width: {type: String, default:"auto"},
     clearButton: {type: Boolean, default: false},
     lang: {type: String, default: navigator.language},
     name: {type: String},
     placeholder: {type: String},
-    iconsFont: {type: String, default: 'glyphicon'}
+    iconsFont: {type: String, default: 'glyphicon'},
+    required: {type: Boolean, default: false},
   },
   data () {
-    return {
+    var res = {
       currDate: new Date(),
       dateRange: [],
       decadeRange: [],
       displayDayView: false,
       displayMonthView: false,
       displayYearView: false,
-      val: this.value
-    }
+      val: "",
+      hval: "",
+      mval: "",
+      fInteracted:false
+    };
+    this.applyValue(this.value, res);
+    return res;
   },
   watch: {
     currDate () {
@@ -106,10 +120,21 @@ export default {
       this.val = this.stringify(this.currDate)
     },
     val (val, old) {
-      this.$emit('input', val)
+      this.emitValue(val, this.hval, this.mval);
+    },
+    hval(h) {
+      this.emitValue(this.val, h, this.mval);
+    },
+    mval(m) {
+      this.emitValue(this.val, this.hval, m);
     },
     value (val) {
-      if (this.val !== val) { this.val = val }
+      this.applyValue(val, this);
+    },
+    valid(val) {
+      this.$emit('isvalid', val)
+      this.$emit(!val ? 'invalid' : 'valid')
+      if (this._parent) this._parent.validate()
     }
   },
   computed: {
@@ -124,9 +149,45 @@ export default {
     },
     disabledDaysArray () {
       return this.disabledDaysOfWeek.map(d => parseInt(d, 10))
+    },
+    canValidate() {
+      return !this.disabled && !this.readonly && (this.required)
+    },
+    valid() {
+      //console.log([this.canValidate,this.required, this.value])
+      if (!this.canValidate) {
+        return true;
+      } else {
+        return !(this.required&&(!this.value));
+      }
     }
   },
   methods: {
+    emitValue(sDate, nH, nM) {
+      var dt = sDate?this.parse(sDate):null;
+      if (dt) {
+        dt.setHours(nH||0);
+        dt.setMinutes(nM||0);
+      }
+      this.$emit('input', dt?dt.valueOf():null);
+    },
+    applyValue(val, obj) {
+      var dt = new Date(val);
+      var sVal = val==null?"":this.stringify(dt);
+      var hVal = val==null?null:(dt.getHours());
+      var mVal = val==null?null:(Math.round(dt.getMinutes()/5)*5);
+      //console.log({sVal:sVal, mVal:mVal, hVal:hVal})
+      if (obj.val !== sVal) { obj.val = sVal }
+      if (obj.hval!==hVal) {
+        obj.hval = hVal;
+      }
+      if (obj.mval!==mVal) {
+        obj.mval = mVal;
+      }
+    },
+    pad2 (n) {
+      return n>9?String(n):"0"+String(n);
+    },
     close () {
       this.displayDayView = this.displayMonthView = this.displayYearView = false
     },
@@ -182,6 +243,7 @@ export default {
       if (day.sclass === 'datepicker-item-disable') {
         return false
       } else {
+        this.fInteracted = true;
         this.currDate = day.date
         this.val = this.stringify(this.currDate)
         this.displayDayView = false
@@ -220,7 +282,7 @@ export default {
       return this.text.months[date.getMonth()] + ' ' + date.getFullYear()
     },
     parseMonth (date) {
-      return this.text.months[date.getMonth()]
+      return translations(this.lang).months[date.getMonth()]
     },
     stringifyYearHeader (date) {
       return date.getFullYear()
@@ -321,9 +383,19 @@ export default {
       }
     }
   },
+  created() {
+    var parent = this.$parent;
+    while (parent && !parent._formValidator) { parent = parent.$parent }
+    //console.log({parent:parent})
+    if (parent && parent._formValidator) {
+      parent.children.push(this)
+      this._parent = parent
+    }
+  },
   mounted () {
     this.$emit('child-created', this)
-    this.currDate = this.parse(this.val) || this.parse(new Date())
+    //console.log({val:this.val});
+    this.currDate = /*this.parse(this.val) || */this.parse(new Date())
     this._blur = e => {
       if (!this.$el.contains(e.target))
         this.close()
@@ -332,6 +404,10 @@ export default {
   },
   beforeDestroy () {
     window.removeEventListener('click', this._blur)
+    if (this._parent) {
+      var index = this._parent.children.indexOf(this)
+      this._parent.children.splice(index, 1)
+    }
   }
 }
 </script>
